@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=9" >
+
+<title>Find out how many flights were on time on Week days and Weekends (Consider Saturday and Sunday as weekends)</title>
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 12px;
+   margin: 8px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 { 
+   font-size:2.2em; 
+}
+
+h2 { 
+   font-size:1.8em; 
+}
+
+h3 { 
+   font-size:1.4em; 
+}
+
+h4 { 
+   font-size:1.0em; 
+}
+
+h5 { 
+   font-size:0.9em; 
+}
+
+h6 { 
+   font-size:0.8em; 
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {	
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * { 
+      background: transparent !important; 
+      color: black !important; 
+      filter:none !important; 
+      -ms-filter: none !important; 
+   }
+
+   body { 
+      font-size:12pt; 
+      max-width:100%; 
+   }
+       
+   a, a:visited { 
+      text-decoration: underline; 
+   }
+
+   hr { 
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote { 
+      padding-right: 1em; 
+      page-break-inside: avoid; 
+   }
+
+   tr, img { 
+      page-break-inside: avoid; 
+   }
+
+   img { 
+      max-width: 100% !important; 
+   }
+
+   @page :left { 
+      margin: 15mm 20mm 15mm 10mm; 
+   }
+     
+   @page :right { 
+      margin: 15mm 10mm 15mm 20mm; 
+   }
+
+   p, h2, h3 { 
+      orphans: 3; widows: 3; 
+   }
+
+   h2, h3 { 
+      page-break-after: avoid; 
+   }
+}
+
+</style>
+
+
+
+
+
+</head>
+
+<body>
+<p>####Flightdelay analysis</p>
+
+<p>Flightdelay&lt;-read.csv(&ldquo;Zukademy/Assignments/FlightDelays.csv&rdquo;,header=TRUE)
+library(lubridate)
+library(dplyr)</p>
+
+<p>###Question one
+##Find out the number of delayed flights on weekdays</p>
+
+<p>Flightdelay$date&lt;-as.character(Flightdelay$date)
+Flightdelay$date&lt;-mdy(Flightdelay$date)
+str(Flightdelay)
+Flightdelay_2&lt;-Flightdelay%&gt;%
+  mutate(Year=year(date),
+         Month=month(date,label=TRUE,abbr=TRUE),
+         day=day(date))
+Flightdelay_2&lt;-Flightdelay%&gt;%
+  mutate(weekday=wday(date,label = TRUE))
+Flightdelay_3&lt;-Flightdelay%&gt;%
+  filter(delay==&ldquo;delayed&rdquo;&amp;weekdays(date)!=&ldquo;Saturday&rdquo;&amp;weekdays(date)!=&ldquo;Sunday&rdquo;)
+nrow(Flightdelay_3)<br/>
+length(Flightdelay_3)
+head(Flightdelay_3)
+glimpse(Flightdelay_3)</p>
+
+<p>###Question Two
+##Find a Find the average distance, total distance and count for all delayed flights on Friday</p>
+
+<p>Flightdelay_4&lt;-Flightdelay%&gt;%
+             filter(weekdays(date)==&ldquo;Friday&rdquo;&amp;delay==&ldquo;delayed&rdquo;)
+nrow(Flightdelay_4)
+Flightdelay_5&lt;-Flightdelay%&gt;%
+               group_by(distance)%&gt;%
+  summarise(total=sum(Flightdelay_4$distance),average=mean(Flightdelay_4$distance),count=length(Flightdelay_4$distance))
+summarise(Flightdelay_5)
+glimpse(Flightdelay_5)</p>
+
+<p>###Question Three</p>
+
+<h2>Find out how many flights were on time on Week days and Weekends (Consider Saturday and Sunday as weekends)</h2>
+
+<p>Flightdelay_6&lt;-Flightdelay%&gt;%
+  filter(delay==&ldquo;ontime&rdquo;)%&gt;%
+  select(dayweek)
+nrow(Flightdelay_6)</p>
+
+<p>###Question Four
+##Find out the number of flights for each destination across all weekdays</p>
+
+<p>Flightdelay_7&lt;-Flightdelay%&gt;%
+  group_by(dest)%&gt;%
+  filter(weekdays(date)!=&ldquo;Saturday&rdquo;&amp;weekdays(date)!=&ldquo;Sunday&rdquo;)%&gt;%
+  select(dest)
+nrow(Flightdelay_7)</p>
+
+<p>###Question Five
+##Find out the number of times weather was bad across all weekdays. (1 indicates bad weather)</p>
+
+<p>unique(Flightdelay$weather)
+Flightdelay_8&lt;-Flightdelay%&gt;%
+              filter(weekdays(date)!=&ldquo;Saturday&rdquo;&amp;weekdays(date)!=&ldquo;Sunday&rdquo;&amp;weather==1)
+nrow(Flightdelay_8)
+plot(Flightdelay)
+plot(Flightdelay_8)</p>
+
+<p>###Plotting line graphs
+##Plot a line graph showing count of flights by day</p>
+
+<p>library(ggplot2)
+Flightdelay_2&lt;-Flightdelay%&gt;%
+  mutate(Year=year(date),
+         Month=month(date,label=TRUE,abbr=TRUE),
+         day=day(date))</p>
+
+<p>Flightdelay_2&lt;-Flightdelay%&gt;%
+  mutate(weekday=wday(date,label = TRUE))</p>
+
+<p>Flightdelay_9&lt;-Flightdelay_2%&gt;%
+               group_by(weekday)%&gt;%
+               summarise(count=n())</p>
+
+<p>Flightdelay_9&lt;-ggplot(data=Flightdelay_9,aes(x=weekday,y=count,group=1,color=1))+
+               geom_line(color=&ldquo;yellow&rdquo;)+
+               labs(title = &ldquo;Distribution of flights by day&rdquo;,x=&ldquo;weekday&rdquo;,y=&ldquo;count&rdquo;)+
+                theme_bw()+
+                theme(plot.title = element_text(hjust=0.5))</p>
+
+<p>Flightdelay_9   </p>
+
+<p>##Plot a line graph showing count of weather by day</p>
+
+<p>Flightdelay_10&lt;-Flightdelay_2%&gt;%
+               group_by(weekday,weather)%&gt;%
+              summarise(count=n())%&gt;%
+              mutate(weather=as.character(weather))</p>
+
+<p>Flightdelay_10&lt;-ggplot(data=Flightdelay_10,aes(x=weekday,y=count,group=weather,color=weather))+
+               geom_line()+
+               labs(title = &ldquo;Distribution of weather by day&rdquo;,x=&ldquo;weekday&rdquo;,y=&ldquo;count&rdquo;)+
+                 theme_bw()+
+                  theme(plot.title = element_text(hjust = 0.5))+
+                   scale_color_brewer(palette = &ldquo;Reds&rdquo;)
+Flightdelay_10</p>
+
+</body>
+
+</html>
+
